@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DDD.Core.Time;
@@ -37,7 +38,13 @@ namespace DDD.Functions
                 var apiClient = new SessionizeApiClient(httpClient, sessionize.SubmissionsApiKey);
                 var (sessionsRepo, presentersRepo) = await submissions.GetRepositoryAsync();
 
-                await SyncService.Sync(apiClient, sessionsRepo, presentersRepo, log, new DateTimeProvider(), conference.ConferenceInstance);
+                try {
+                    await SyncService.Sync(apiClient, sessionsRepo, presentersRepo, log, new DateTimeProvider(), conference.ConferenceInstance);
+				}
+				catch (Exception e)
+				{
+					log.LogError(e, "Failed to retrieve SessionizeReadModelSync");
+				}
             }
         }
     }
